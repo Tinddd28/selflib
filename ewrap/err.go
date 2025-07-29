@@ -3,35 +3,36 @@ package ewrap
 import (
 	"errors"
 	"strings"
+
+	"github.com/Tinddd28/selflib/types"
 )
 
 type E struct {
-	err     error
-	wrapped error
-	fields  List
+	errs   []error
+	fields types.List
 }
 
-func New(reason string, f ...Field) *E {
+func New(reason string, f ...types.Field) *E {
+	return From(errors.New(reason), f...)
+}
+
+func NewFrom(reason string, wrapped error, f ...types.Field) *E {
+	if wrapped == nil {
+		return New(reason, f...)
+	}
 	return &E{
-		err:     errors.New(reason),
-		wrapped: nil,
-		fields:  f,
+		errs:   []error{errors.New(reason), wrapped},
+		fields: f,
 	}
 }
 
-func NewFrom(origin error, reason string, f ...Field) *E {
-	return &E{
-		err:     errors.New(reason),
-		wrapped: origin,
-		fields:  f,
+func From(origin error, f ...types.Field) *E {
+	if origin == nil {
+		origin = errors.New("error(nil)")
 	}
-}
-
-func From(origin error) *E {
 	return &E{
-		err:     origin,
-		wrapped: nil,
-		fields:  nil,
+		errs:   []error{origin},
+		fields: f,
 	}
 }
 
@@ -53,18 +54,55 @@ func writeTo(b *strings.Builder, err error) {
 		return
 	}
 
-	if ee.err == nil {
-		b.WriteString("nil")
+	b.WriteString(ee.Reason())
+
+	if ee == nil {
 		return
 	}
 
-	b.WriteString(ee.err.Error())
-
-	if ee.fields != nil {
-
+	if len(ee.fields) > 0 {
+		b.WriteRune(' ')
+		ee.fields.WriteTo(b)
 	}
 
-	if ee.wrapped != nil {
-		writeTo(b, ee.wrapped)
+	if len(ee.errs) > 1 {
+		writeTo(b, ee.errs[1])
 	}
+}
+
+func (e *E) Reason() string {
+	if e == nil {
+		return "(*ewrap.E)(nil)"
+	}
+
+	if len(e.errs) == 0 {
+		return "(*ewrap.E)(empty)"
+	}
+	return e.errs[0].Error()
+}
+
+func (e *E) Wrap(err error, f ...types.Field) *E {
+	if err == nil {
+		err = errors.New("error(nil)")
+	}
+	return &E{
+		errs:   []error{e, err},
+		fields: f,
+	}
+}
+
+func (e *E) Unwrap() []error {
+	return e.errs
+}
+
+func (e *E) WithFields(f ...types.Field) *E {
+	return From(e, f...)
+}
+
+func (e *E) WithField(key string, value any) *E {
+	return e.WithFields(types.F(key, value))
+}
+
+func (e *E) Fields() types.List {
+	return e.fields
 }
