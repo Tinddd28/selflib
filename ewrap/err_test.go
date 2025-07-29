@@ -121,4 +121,36 @@ func TestErr(t *testing.T) {
 		assert.NotErrorIs(t, e4, e2)
 	})
 
+	t.Run(".FindOrigin()", func(t *testing.T) {
+		t.Parallel()
+
+		origin := errors.New("origin error")
+		e1 := ewrap.From(origin)
+		e2 := ewrap.New("wrapper").Wrap(e1)
+		e3 := ewrap.New("outer").Wrap(e2)
+
+		// Test finding in simple case
+		found := e1.FindOrigin(origin)
+		assert.NotNil(t, found)
+		assert.Equal(t, e1, found)
+
+		// Test finding in nested case
+		found = e2.FindOrigin(origin)
+		assert.NotNil(t, found)
+		assert.Equal(t, e1, found)
+
+		// Test finding in deeply nested case
+		found = e3.FindOrigin(origin)
+		assert.NotNil(t, found)
+		assert.Equal(t, e1, found)
+
+		// Test not finding
+		otherErr := errors.New("other error")
+		notFound := e3.FindOrigin(otherErr)
+		assert.Nil(t, notFound)
+
+		// Test with nil
+		var nilE *ewrap.E
+		assert.Nil(t, nilE.FindOrigin(origin))
+	})
 }

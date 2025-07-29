@@ -106,3 +106,34 @@ func (e *E) WithField(key string, value any) *E {
 func (e *E) Fields() types.List {
 	return e.fields
 }
+
+func (e *E) FindOrigin(origin error) *E {
+	if e == nil {
+		return nil
+	}
+
+	// Check if any direct error in the chain matches the origin
+	for i, err := range e.errs {
+		if errors.Is(err, origin) {
+			// If it's the first error, return this E
+			if i == 0 {
+				return e
+			}
+			// Otherwise, try to cast to *E and return
+			if wrappedE, ok := err.(*E); ok {
+				return wrappedE
+			}
+			// If it's not an *E but matches, return this E as it contains the origin
+			return e
+		}
+
+		// If the error is an E, recursively check it
+		if wrappedE, ok := err.(*E); ok {
+			if found := wrappedE.FindOrigin(origin); found != nil {
+				return found
+			}
+		}
+	}
+
+	return nil
+}

@@ -1,0 +1,53 @@
+{
+  "lsp": {
+    "gopls": {
+      "enable": true,
+      "settings": {
+        "staticcheck": true,
+        "analyses": {
+          "unusedparams": true,
+          "shadow": true
+        }
+      }
+    }
+  },
+  "formatter": {
+    "go": {
+      "command": "gofmt",
+      "arguments": ["-s", "-w"]
+    }
+  },
+  "vim_mode": false,
+  "theme": "One Dark",
+  "ui_font_size": 14,
+  "buffer_font_size": 13,
+  "buffer_font_family": "JetBrains Mono",
+  "autosave": {
+    "after_delay": {
+      "milliseconds": 1000
+    }
+  },
+  "terminal": {
+    "font_size": 13,
+    "blinking": "off"
+  },
+  "file_scan_exclusions": [
+    "node_modules",
+    "vendor",
+    ".git"
+  ],
+  "journal": {
+    "path": "~/.zed-journal"
+  },
+  "languages": {
+    "Go": {
+      "format_on_save": true,
+      "save_hooks": [
+        {
+          "command": "golangci-lint",
+          "working_directory": "${workspaceRoot}"
+        }
+      ]
+    }
+  }
+}
