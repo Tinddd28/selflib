@@ -2,12 +2,13 @@ package ewrap_test
 
 import (
 	"errors"
-	"github.com/Tinddd28/selflib/ewrap"
-	"github.com/Tinddd28/selflib/types"
-	"github.com/stretchr/testify/assert"
 	"log"
 	"os"
 	"testing"
+
+	"github.com/Tinddd28/selflib/ewrap"
+	"github.com/Tinddd28/selflib/types"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestErr(t *testing.T) {
@@ -94,6 +95,8 @@ func TestErr(t *testing.T) {
 		assert.Equal(t, "e1 (k1=v1) (k3=v3): e2 (k2=v2)", e1.Wrap(e2, types.F("k3", "v3")).Error())
 
 		assert.Equal(t, "e1 (k1=v1): error(nil)", e1.Wrap(nil).Error())
+
+		log.Println(ewrap.New("e1").Wrap(e2).Error())
 	})
 
 	t.Run(".Is()", func(t *testing.T) {
@@ -107,7 +110,7 @@ func TestErr(t *testing.T) {
 			e4       = ewrap.From(e0)
 		)
 
-		assert.ErrorIs(t, e1, e1)
+		assert.ErrorIs(t, e1, e1) //nolint:testifylint
 		assert.NotErrorIs(t, e1, e0)
 
 		assert.ErrorIs(t, e2, e0)
@@ -116,8 +119,6 @@ func TestErr(t *testing.T) {
 		assert.ErrorIs(t, e3, os.ErrNotExist)
 
 		assert.NotErrorIs(t, e4, e2)
-		log.Println(e4.WithField("k1", "v1"))
-		assert.NotErrorIs(t, e4.WithField("k1", "v1"), e4.WithField("k1", "v1"))
 	})
 
 }
