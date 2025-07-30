@@ -63,7 +63,7 @@ func fieldsListToSlogAttrs(fs types.List, err error) []slog.Attr {
 	sfs := make([]slog.Attr, 0, len(fs)+boolToInt(err != nil))
 
 	if err != nil {
-		sfs = append(sfs, slog.Any("error", err))
+		sfs = append(sfs, slog.Any("error", err)) // FIXME: Implement usage error; now: cant display error, only key = @e
 	}
 
 	for _, f := range fs {
