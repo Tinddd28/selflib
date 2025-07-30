@@ -129,8 +129,9 @@ func (e *E) FindOrigin(origin error) *E {
 
 		// If the error is an E, recursively check it
 		if wrappedE, ok := err.(*E); ok {
-			if found := wrappedE.FindOrigin(origin); found != nil {
-				return found
+			err := wrappedE.FindOrigin(origin)
+			if err != nil {
+				return err
 			}
 		}
 	}
