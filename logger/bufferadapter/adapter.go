@@ -17,6 +17,10 @@ type LogEntry struct {
 
 type LogEntries []LogEntry
 
+func (le *LogEntries) Reset() {
+	*le = LogEntries{}
+}
+
 type Adapter struct {
 	buff *LogEntries
 	fs   types.List
