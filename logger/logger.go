@@ -52,7 +52,7 @@ func (l SelfLogger) Warn(msg string, fs ...types.Field) {
 
 // Warning logs a message with the [LevelWarn] level and the provided error
 func (l SelfLogger) WarnE(msg string, err error, fs ...types.Field) {
-	l.Log(LevelInfo, msg, err, fs...)
+	l.Log(LevelWarn, msg, err, fs...)
 }
 func (l SelfLogger) Info(msg string, fs ...types.Field) {
 	l.Log(LevelInfo, msg, nil, fs...)
