@@ -1,8 +1,13 @@
 module github.com/Tinddd28/selflib
 
-go 1.23.5
+go 1.24.0
 
-require github.com/stretchr/testify v1.10.0
+toolchain go1.24.5
+
+require (
+	github.com/Tinddd28/tlog v1.0.3
+	github.com/stretchr/testify v1.10.0
+)
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
